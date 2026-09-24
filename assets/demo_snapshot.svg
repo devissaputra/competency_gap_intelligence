@@ -1,14 +1,27 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="280" viewBox="0 0 1200 280" role="img" aria-labelledby="title desc">
-<title id="title">Competency Gap Intelligence demo snapshot</title>
-<desc id="desc">Example values produced by the synthetic demo included in this repository.</desc>
-<rect width="1200" height="280" rx="24" fill="#111827"/>
-<text x="52" y="48" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" fill="#f9fafb">Demo snapshot</text>
-<text x="52" y="76" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#aeb8c5">Output from the bundled synthetic example. These are not research results.</text>
-<rect x="52.0" y="112" width="539.0" height="108" rx="14" fill="#1f2937" stroke="#46556a"/>
-<text x="70.0" y="142" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="600" fill="#93c5fd">Top gap</text>
-<text x="70.0" y="172" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="600" fill="#f3f4f6">Analytics: 2 levels</text>
-<rect x="609.0" y="112" width="539.0" height="108" rx="14" fill="#1f2937" stroke="#46556a"/>
-<text x="627.0" y="142" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="600" fill="#93c5fd">Next gap</text>
-<text x="627.0" y="172" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="600" fill="#f3f4f6">Instructional design: 1 level</text>
-<text x="52" y="252" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#8995a5">Run: python scripts/run_demo.py</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="340" viewBox="0 0 1200 340" role="img" aria-labelledby="title desc">
+<title id="title">Competency Gap Intelligence synthetic demo snapshot</title>
+<desc id="desc">Synthetic role profile showing confirmed gaps, unknown evidence, insufficient evidence, an exceeded target and prerequisite-aware development sequencing.</desc>
+<rect width="1200" height="340" rx="24" fill="#111827"/>
+<text x="52" y="48" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" fill="#f9fafb">Synthetic competency-evidence demo</text>
+<text x="52" y="76" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#aeb8c5">Seven competencies · multiple evidence conditions · prerequisite-aware planning.</text>
+
+<rect x="52" y="112" width="250" height="110" rx="14" fill="#1f2937" stroke="#46556a"/>
+<text x="70" y="142" font-family="Arial" font-size="13" font-weight="600" fill="#93c5fd">Confirmed gaps</text>
+<text x="70" y="172" font-family="Arial" font-size="16" font-weight="600" fill="#f3f4f6">ranked by gap × importance</text>
+
+<rect x="320" y="112" width="250" height="110" rx="14" fill="#1f2937" stroke="#46556a"/>
+<text x="338" y="142" font-family="Arial" font-size="13" font-weight="600" fill="#93c5fd">Unknown evidence</text>
+<text x="338" y="172" font-family="Arial" font-size="16" font-weight="600" fill="#f3f4f6">collect evidence first</text>
+
+<rect x="588" y="112" width="250" height="110" rx="14" fill="#1f2937" stroke="#46556a"/>
+<text x="606" y="142" font-family="Arial" font-size="13" font-weight="600" fill="#93c5fd">Weak / stale evidence</text>
+<text x="606" y="172" font-family="Arial" font-size="16" font-weight="600" fill="#f3f4f6">review before ranking</text>
+
+<rect x="856" y="112" width="292" height="110" rx="14" fill="#1f2937" stroke="#46556a"/>
+<text x="874" y="142" font-family="Arial" font-size="13" font-weight="600" fill="#93c5fd">Prerequisite sequencing</text>
+<text x="874" y="172" font-family="Arial" font-size="16" font-weight="600" fill="#f3f4f6">statistics before analytics</text>
+
+<text x="52" y="264" font-family="Arial" font-size="14" fill="#d1d5db">Resource matching checks entry level, target coverage, effort, and declared competency prerequisites.</text>
+<text x="52" y="291" font-family="Arial" font-size="14" fill="#d1d5db">The demo also includes one competency above target and ranking sensitivity across alternative role priorities.</text>
+<text x="52" y="317" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#8995a5">All values are synthetic; no employee assessment is represented.</text>
 </svg>
