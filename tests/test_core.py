@@ -380,6 +380,19 @@ class CoreTests(unittest.TestCase):
         )
         self.assertEqual(matches["statistics"][0]["id"], "full")
 
+    def test_resource_prerequisite_blocks_match(self):
+        analysis = core.competency_gaps(
+            REQUIRED,
+            OBSERVED,
+            scale=SCALE,
+        )
+        matches = core.match_resources(
+            analysis,
+            RESOURCES,
+            scale=SCALE,
+        )
+        self.assertEqual(matches["learning_analytics"], [])
+
     def test_plan_collects_evidence_before_training_unknown_skill(self):
         plan = core.build_development_plan(
             REQUIRED,
