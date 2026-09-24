@@ -1,0 +1,54 @@
+[
+  {
+    "id": "statistics-foundations",
+    "title": "Statistics Foundations Practice Lab",
+    "competency": "statistics",
+    "entry_level": 1,
+    "target_level": 3,
+    "effort_hours": 12,
+    "modality": "project",
+    "prerequisites": []
+  },
+  {
+    "id": "data-literacy-bridge",
+    "title": "Applied Data Literacy Bridge",
+    "competency": "data_literacy",
+    "entry_level": 2,
+    "target_level": 4,
+    "effort_hours": 8,
+    "modality": "self-paced",
+    "prerequisites": []
+  },
+  {
+    "id": "learning-analytics-practice",
+    "title": "Learning Analytics Evidence Project",
+    "competency": "learning_analytics",
+    "entry_level": 2,
+    "target_level": 4,
+    "effort_hours": 18,
+    "modality": "project",
+    "prerequisites": [
+      "statistics"
+    ]
+  },
+  {
+    "id": "learning-analytics-intro",
+    "title": "Learning Analytics Diagnostic Workshop",
+    "competency": "learning_analytics",
+    "entry_level": 1,
+    "target_level": 3,
+    "effort_hours": 6,
+    "modality": "workshop",
+    "prerequisites": []
+  },
+  {
+    "id": "python-applied-analysis",
+    "title": "Python for Reproducible Analysis",
+    "competency": "python",
+    "entry_level": 2,
+    "target_level": 3,
+    "effort_hours": 10,
+    "modality": "project",
+    "prerequisites": []
+  }
+]
