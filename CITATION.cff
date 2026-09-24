@@ -5,6 +5,6 @@ type: software
 authors:
   - family-names: "Saputra"
     given-names: "Devis Wawan"
-repository-code: "https://github.com/devissaputra/competency-gap-intelligence"
+repository-code: "https://github.com/devissaputra/competency_gap_intelligence"
 license: MIT
 version: 0.1.0
