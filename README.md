@@ -1,77 +1,380 @@
 # Competency Gap Intelligence
 
-> Skill gap scoring and resource planning baseline for workplace capability development.
+> Evidence-aware competency gap analysis with prerequisite sequencing, explainable resource matching, and ranking sensitivity.
 
-[![CI](https://github.com/devissaputra/competency-gap-intelligence/actions/workflows/ci.yml/badge.svg)](https://github.com/devissaputra/competency-gap-intelligence/actions/workflows/ci.yml)
+[![CI](https://github.com/devissaputra/competency_gap_intelligence/actions/workflows/ci.yml/badge.svg)](https://github.com/devissaputra/competency_gap_intelligence/actions/workflows/ci.yml)
 
 ![Competency Gap Intelligence workflow](assets/architecture.svg)
 
-**Area:** Workplace Learning & Capability Development    
+**Area:** Learning & Development · Competency Intelligence · Workforce Development  
 **Status:** working research prototype  
 **Author:** Devis Wawan Saputra
 
 ## What this project is for
 
-This prototype compares the skills a role requires with the skills a learner or employee currently demonstrates. It ranks positive gaps by size and optional importance, then links those gaps to a small set of development resources.
+Competency systems often make a dangerous simplification:
 
-**Who may find it useful:** L&D teams, workforce-development researchers, and instructional designers building competency-based development paths.
+> no competency record = no competency.
+
+This repository explicitly avoids that assumption.
+
+Competency Gap Intelligence separates:
+
+- what a role requires
+- what evidence exists
+- how strong and recent that evidence is
+- whether a gap is actually confirmed
+- which prerequisite skills block progression
+- which resources match the learner's current and target levels
+- how sensitive the priority order is to role-importance assumptions
+
+The output is designed to support development planning, not performance scoring.
+
+## Core design rule
+
+**Missing evidence is not proficiency zero.**
+
+A competency can be classified as:
+
+- `gap`
+- `met`
+- `exceeds_target`
+- `unknown_evidence`
+- `insufficient_evidence`
+
+Only confirmed gaps receive a numeric development priority.
+
+Unknown or weak evidence triggers assessment/review instead of automatic training.
 
 ## Research questions
 
-1. How can role requirements and observed proficiency be represented transparently?
-2. Which development actions close the highest-value gaps first?
-3. How should prerequisite competencies influence recommendations?
+1. How should role requirements and demonstrated evidence be represented on an explicit scale?
+2. How should missing, stale, or low-confidence evidence change gap analysis?
+3. Which confirmed gaps remain high priority under different importance assumptions?
+4. How should prerequisite competencies affect development order?
+5. Which learning resources match the learner's current level, target level, and prerequisite state?
+6. Which recommendations are stable enough to support human review?
 
-## How it works
-
-The prototype compares required and observed skill levels, clips negative gaps to zero, applies optional importance weights, and sorts the results into a development priority list. A second function attaches up to three candidate resources to each positive gap.
+## End-to-end workflow
 
 ![Competency Gap Intelligence data and reasoning flow](assets/data_flow.svg)
 
-The implemented path is straightforward: role requirements and observed evidence become weighted gaps, then those gaps are linked to available development resources. No prerequisite graph is inferred in the current baseline.
+The implemented path is:
+
+1. declare a proficiency scale
+2. define role requirements
+3. collect competency evidence with provenance
+4. aggregate multiple evidence records
+5. classify each competency
+6. rank confirmed gaps
+7. identify prerequisite blockers
+8. sequence development needs
+9. match structured resources
+10. test ranking sensitivity under alternative importance scenarios
+
+## Declared proficiency scale
+
+Every analysis requires a named scale with:
+
+- minimum
+- maximum
+
+The synthetic demo uses a 0–5 scale, but the code does not assume that all competency frameworks use those numbers.
+
+That matters because frameworks such as SFIA and O*NET define their own level structures and anchors.
+
+A number without its scale definition is not a meaningful competency statement.
+
+## Role requirements
+
+A role competency can include:
+
+- target proficiency
+- importance
+- framework/source
+- rationale
+
+Example:
+
+```python
+{
+    "statistics": {
+        "target": 3,
+        "importance": 1.4,
+        "framework": "synthetic role profile",
+        "rationale": "Required before advanced learning-analytics work."
+    }
+}
+```
+
+Importance affects priority only after a gap is supported by adequate evidence.
+
+## Competency evidence
+
+Evidence records can include:
+
+- competency
+- observed level
+- source
+- evidence type
+- confidence
+- observation date
+- assessor
+
+Multiple observations are combined using a transparent confidence-weighted mean.
+
+The aggregation also records:
+
+- evidence count
+- mean confidence
+- latest observation date
+- evidence age
+- stale flag
+- sources
+- evidence types
+- assessors
+
+This is deliberately inspectable. It is not presented as a psychometric model.
+
+## Missing and insufficient evidence
+
+If no usable evidence exists:
+
+```text
+status = unknown_evidence
+current = None
+gap = None
+priority = None
+action = collect_evidence
+```
+
+If evidence exists but is stale or below the configured confidence threshold:
+
+```text
+status = insufficient_evidence
+priority = None
+action = review_evidence
+```
+
+The system therefore does not manufacture a large gap merely because a competency was never assessed.
+
+## Confirmed gap priority
+
+For a sufficiently supported gap:
+
+```text
+gap = target - observed
+priority = gap × importance
+```
+
+Negative gaps are not treated as deficits.
+
+A competency above target receives:
+
+```text
+status = exceeds_target
+gap = 0
+```
+
+The priority formula is simple on purpose. The repository also exposes ranking sensitivity so that the effect of changing importance assumptions is visible.
+
+## Prerequisite intelligence
+
+A competency dependency can be declared explicitly:
+
+```text
+learning_analytics
+      ↑
+  statistics
+```
+
+The prerequisite engine:
+
+- rejects unknown competencies
+- rejects self-dependencies
+- rejects cycles
+- identifies unresolved blockers
+- places prerequisites before dependent gaps
+
+This means a large advanced gap does not automatically outrank a missing foundation.
+
+## Structured resource matching
+
+The original prototype attached the first three resources stored under a competency name.
+
+That has been replaced.
+
+Each learning resource now declares:
+
+- id
+- title
+- competency
+- entry level
+- target level
+- effort hours
+- modality
+- competency prerequisites
+
+A candidate is matched only when:
+
+- the competency is a confirmed gap
+- the current level meets the resource entry level
+- the resource advances beyond the current level
+- its declared competency prerequisites are already met
+
+Resources are ordered transparently by:
+
+1. whether they reach the role target
+2. amount of gap coverage
+3. lower effort
+4. deterministic title tie-breaker
+
+No hidden recommender model is involved.
+
+## Development path
+
+`build_development_plan()` produces an ordered plan with four possible actions:
+
+- `collect_evidence`
+- `review_evidence`
+- `develop`
+- `no_development_required`
+
+Each plan item includes:
+
+- competency
+- status
+- current and target level
+- gap and priority where valid
+- prerequisite blockers
+- matched resources
+- rationale
+
+## Ranking sensitivity
+
+`ranking_sensitivity()` compares gap order across alternative importance-weight scenarios.
+
+It reports:
+
+- ranking under each scenario
+- best rank
+- worst rank
+- whether the rank stayed stable
+
+A priority that moves dramatically when reasonable role weights change should be treated as a planning assumption, not an objective fact.
+
+## Synthetic demo
 
 ![Synthetic demo snapshot for Competency Gap Intelligence](assets/demo_snapshot.svg)
 
-This snapshot shows the bundled synthetic example for Competency Gap Intelligence. It checks the software path; it is not an empirical performance result.
+The bundled example includes seven competencies and deliberately covers several different conditions:
 
-## Methods in the current baseline
+- multiple evidence sources
+- a confirmed foundation gap
+- a dependent advanced gap
+- one competency above target
+- one competency with no evidence
+- one low-confidence self-report
+- one stale evidence record
+- structured learning resources
+- a prerequisite dependency
+- alternative importance scenarios
 
-- competency gap calculation
-- importance weighting
-- priority ranking
-- resource attachment
-- development plan generation
+The example is synthetic. It is designed to exercise the software path, not to describe a real employee.
 
 ## Data
 
-Synthetic role profiles and competency ratings are included.
+The repository includes:
 
-`data/README.md` documents the sample schema and the conditions that should be recorded before any real dataset is connected. Restricted or identifiable learner data should stay outside the repository.
+- `data/sample.csv` — synthetic evidence records
+- `data/role_profile.json` — synthetic role requirements and scale
+- `data/prerequisites.json` — synthetic prerequisite graph
+- `data/resources.json` — structured synthetic development resources
+- `data/README.md` — schema, evidence, governance, and scale documentation
 
 ## Run the demo
 
 ```bash
-git clone https://github.com/devissaputra/competency-gap-intelligence.git
-cd competency-gap-intelligence
+git clone https://github.com/devissaputra/competency_gap_intelligence.git
+cd competency_gap_intelligence
 python scripts/run_demo.py
 python -m unittest discover -s tests -v
 ```
 
-The demo uses two competencies and prints their gap size and priority. It is intentionally small so the ranking logic can be checked without a proprietary skills platform.
+The current baseline uses only the Python standard library.
 
-## What to evaluate next
+## Core API
 
-The next useful test is whether the gap scores agree with independent evidence from work samples, assessments, or manager review. Resource recommendations should then be evaluated for relevance and actual skill improvement.
+`validate_scale(...)` validates a declared proficiency scale.
+
+`validate_requirements(...)` validates role requirements and importance.
+
+`aggregate_evidence(...)` combines multiple evidence records while preserving provenance and recency.
+
+`competency_gaps(...)` classifies each competency without converting missing evidence to zero.
+
+`validate_prerequisites(...)` validates the dependency graph and rejects cycles.
+
+`prerequisite_blockers(...)` identifies unresolved foundations.
+
+`development_sequence(...)` orders prerequisite and downstream needs.
+
+`validate_resources(...)` validates structured development resources.
+
+`match_resources(...)` matches resources only to confirmed, level-compatible gaps.
+
+`build_development_plan(...)` creates the explainable assessment/development path.
+
+`ranking_sensitivity(...)` compares confirmed-gap rankings across importance scenarios.
 
 ## Evaluation view
 
-![Competency Gap Intelligence evaluation dashboard](assets/evaluation_dashboard.svg)
+![Competency Gap Intelligence evaluation checklist](assets/evaluation_dashboard.svg)
 
-The Competency Gap Intelligence dashboard is an evaluation checklist rather than a result chart. The bars are illustrative only; the labels show the evidence a real study would need to collect.
+The evaluation graphic is a checklist, not a measured result.
+
+A real study should validate:
+
+- role-profile quality
+- proficiency evidence quality
+- scoring reliability
+- prerequisite validity
+- resource relevance
+- learning impact
+- ranking robustness
+- fairness in opportunity to demonstrate competency
+
+## Framework context
+
+The implementation is intentionally framework-agnostic.
+
+Useful external reference systems include:
+
+- ESCO for occupation–skill relationships
+- O*NET for structured worker/job content, scales, and level anchors
+- SFIA for digital professional skills and levels of responsibility
+
+The repository does not copy or redistribute those frameworks.
+
+See `docs/related_work.md`.
 
 ## Limits and responsible use
 
-A numerical gap is only as credible as the competency framework and evidence behind it. The current code does not infer skills from employee behavior and should not be used for performance decisions. See `docs/ethics_and_risks.md` for the broader risk review.
+This repository does **not**:
+
+- infer competency from employee behavior
+- validate a competency framework
+- prove that an observed score is reliable
+- estimate potential
+- prove that a resource will close a gap
+- estimate causal training impact
+- recommend employment actions
+
+A numerical competency difference is only as credible as the framework, scale, evidence, and opportunity to demonstrate the skill.
+
+Do not use this prototype alone for hiring, promotion, termination, pay, discipline, or performance ratings.
+
+See `docs/ethics_and_risks.md`.
 
 ## Repository map
 
@@ -85,7 +388,10 @@ A numerical gap is only as credible as the competency framework and evidence beh
 │   └── evaluation_dashboard.svg
 ├── data/
 │   ├── README.md
-│   └── sample.csv
+│   ├── sample.csv
+│   ├── role_profile.json
+│   ├── prerequisites.json
+│   └── resources.json
 ├── docs/
 │   ├── ethics_and_risks.md
 │   ├── related_work.md
@@ -94,6 +400,7 @@ A numerical gap is only as credible as the competency framework and evidence beh
 ├── scripts/run_demo.py
 ├── src/competency_gap_intelligence/core.py
 ├── tests/test_core.py
+├── .gitignore
 ├── CITATION.cff
 ├── LICENSE
 ├── pyproject.toml
@@ -102,16 +409,19 @@ A numerical gap is only as credible as the competency framework and evidence beh
 
 ## Research path
 
-A credible next version would:
+A stronger empirical version would:
 
-1. connect gaps to evidence with clear provenance
-2. compare rankings with expert competency review
-3. measure whether recommended practice closes the targeted gap
-
-## Related work
-
-`docs/related_work.md` points to open projects that are relevant to this problem area. They are context for comparison and study design; this repository does not present their code as its own.
+1. connect to a versioned competency framework
+2. define anchored proficiency rubrics
+3. validate role requirements with multiple job experts
+4. measure rater/scoring reliability
+5. model uncertainty in proficiency estimates
+6. validate prerequisite relationships
+7. compare resource matching with expert L&D recommendations
+8. test whether development resources improve independent competency evidence
+9. evaluate opportunity-to-demonstrate bias
+10. compare the transparent baseline with learned recommendation methods
 
 ## Citation and license
 
-`CITATION.cff` contains the software citation. The code and original SVG visuals use the MIT License. Any external dataset keeps its own license and usage conditions.
+`CITATION.cff` contains the software citation. Code and original SVG visuals use the MIT License. External competency frameworks and datasets retain their own licenses and usage terms.
