@@ -5,10 +5,24 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "competency-gap-intelligence"
 version = "0.1.0"
-description = "Skill gap scoring and resource planning baseline for workplace capability development."
+description = "Evidence-aware competency gap analysis with prerequisite sequencing, explainable resource matching, and ranking sensitivity."
 requires-python = ">=3.10"
 license = {text = "MIT"}
 authors = [{name = "Devis Wawan Saputra"}]
+readme = "README.md"
+keywords = [
+  "learning-and-development",
+  "competency-management",
+  "skills-gap-analysis",
+  "workforce-development",
+  "competency-framework",
+  "learning-paths",
+  "talent-development",
+  "python",
+]
+
+[project.urls]
+Repository = "https://github.com/devissaputra/competency_gap_intelligence"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
