@@ -673,16 +673,36 @@ def match_resources(
             if resource["target_level"] <= current:
                 continue
 
+            resource_blockers = []
+            for prerequisite in resource["prerequisites"]:
+                prerequisite_row = by_skill.get(prerequisite)
+                if prerequisite_row is None:
+                    raise ValueError(
+                        f"resource prerequisite {prerequisite} is not in the competency framework"
+                    )
+                if prerequisite_row["status"] not in ("met", "exceeds_target"):
+                    resource_blockers.append(
+                        {
+                            "skill": prerequisite,
+                            "status": prerequisite_row["status"],
+                        }
+                    )
+
+            if resource_blockers:
+                continue
+
             coverage = min(target, resource["target_level"]) - current
             candidates.append(
                 {
                     **resource,
                     "coverage": coverage,
                     "reaches_role_target": resource["target_level"] >= target,
+                    "resource_blockers": resource_blockers,
                     "rationale": (
                         f"Current level {current:.2f} meets entry level "
                         f"{resource['entry_level']:.2f}; resource targets "
-                        f"{resource['target_level']:.2f} toward role target {target:.2f}."
+                        f"{resource['target_level']:.2f} toward role target {target:.2f}; "
+                        "declared resource prerequisites are currently met."
                     ),
                 }
             )
