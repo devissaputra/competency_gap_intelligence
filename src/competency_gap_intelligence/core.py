@@ -485,52 +485,49 @@ def development_sequence(analysis, prerequisites=None):
     by_skill = {row["skill"]: row for row in analysis}
     graph = validate_prerequisites(prerequisites, by_skill)
 
-    needs_attention = {
-        skill
-        for skill, row in by_skill.items()
-        if row["status"] in ("gap", "unknown_evidence", "insufficient_evidence")
-    }
+    included = set(by_skill)
 
-    expanded = set(needs_attention)
-
-    def add_parents(skill):
+    indegree = {skill: 0 for skill in included}
+    children = {skill: [] for skill in included}
+    for skill in included:
         for parent in graph[skill]:
-            if parent not in expanded:
-                expanded.add(parent)
-                add_parents(parent)
+            indegree[skill] += 1
+            children[parent].append(skill)
 
-    for skill in list(needs_attention):
-        add_parents(skill)
-
-    indegree = {skill: 0 for skill in expanded}
-    children = {skill: [] for skill in expanded}
-    for skill in expanded:
-        for parent in graph[skill]:
-            if parent in expanded:
-                indegree[skill] += 1
-                children[parent].append(skill)
-
-    queue = deque(
-        sorted(
-            (skill for skill, degree in indegree.items() if degree == 0),
-            key=lambda skill: (
-                0 if by_skill[skill]["status"] in ("gap", "unknown_evidence", "insufficient_evidence") else 1,
-                -(by_skill[skill]["priority"] or 0.0),
-                skill,
-            ),
+    def ordering_key(skill):
+        status_rank = {
+            "gap": 0,
+            "unknown_evidence": 1,
+            "insufficient_evidence": 2,
+            "met": 3,
+            "exceeds_target": 4,
+        }
+        return (
+            status_rank[by_skill[skill]["status"]],
+            -(by_skill[skill]["priority"] or 0.0),
+            skill,
         )
+
+    available = sorted(
+        (
+            skill
+            for skill, degree in indegree.items()
+            if degree == 0
+        ),
+        key=ordering_key,
     )
 
     order = []
-    while queue:
-        skill = queue.popleft()
+    while available:
+        skill = available.pop(0)
         order.append(skill)
-        for child in sorted(children[skill]):
+        for child in children[skill]:
             indegree[child] -= 1
             if indegree[child] == 0:
-                queue.append(child)
+                available.append(child)
+        available.sort(key=ordering_key)
 
-    if len(order) != len(expanded):
+    if len(order) != len(included):
         raise ValueError("could not resolve prerequisite sequence")
     return order
 
