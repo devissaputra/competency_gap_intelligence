@@ -1,3 +1,7 @@
+# Calculation reading guide: ../CALCULATIONS.md (repository root).
+# Observed level = sum(confidence×level)/sum(confidence); priority = positive gap×importance.
+# Missing evidence is not a zero skill level. Levels and confidence must share a justified scale. Weighting summarizes supplied judgments; it does not validate the underlying assessment or resource effectiveness.
+
 import math
 from collections import defaultdict, deque
 from collections.abc import Mapping, Sequence

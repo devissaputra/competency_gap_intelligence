@@ -1,14 +1,29 @@
 # Competency Gap Intelligence
 
+This competency-planning prototype compares role requirements with dated, confidence-labeled evidence and keeps missing or stale evidence visible. Only sufficiently supported gaps are ranked, after which prerequisite constraints shape development sequences and resource matches. The calculations are auditable decision support; they do not turn subjective competency ratings into validated measures.
+
+## Start here
+
+- [Calculations, evidence and verification scope](CALCULATIONS.md)
+- [Figure sources and exact numerical paths](docs/figure_spec.json)
+- [Data status](data/README.md)
+
+![Study question, data, design and interpretation](assets/review_overview.svg)
+
+![Defined calculation and source-linked evidence](assets/review_calculations.svg)
+
+**Review scope:** 32 existing unittest checks passed. The bundled demonstration executed successfully in this review.
+
+## Detailed project documentation
+
 > Evidence-aware competency gap analysis with prerequisite sequencing, explainable resource matching, and ranking sensitivity.
 
 [![CI](https://github.com/devissaputra/competency_gap_intelligence/actions/workflows/ci.yml/badge.svg)](https://github.com/devissaputra/competency_gap_intelligence/actions/workflows/ci.yml)
 
-![Competency Gap Intelligence workflow](assets/architecture.svg)
 
 **Area:** Learning & Development · Competency Intelligence · Workforce Development  
 **Status:** working research prototype  
-**Author:** Devis Wawan Saputra
+**Author:** Devis Saputra
 
 ## What this project is for
 
@@ -57,7 +72,6 @@ Unknown or weak evidence triggers assessment/review instead of automatic trainin
 
 ## End-to-end workflow
 
-![Competency Gap Intelligence data and reasoning flow](assets/data_flow.svg)
 
 The implemented path is:
 
@@ -265,7 +279,6 @@ A priority that moves dramatically when reasonable role weights change should be
 
 ## Synthetic demo
 
-![Synthetic demo snapshot for Competency Gap Intelligence](assets/demo_snapshot.svg)
 
 The bundled example includes seven competencies and deliberately covers several different conditions:
 
@@ -329,7 +342,6 @@ The current baseline uses only the Python standard library.
 
 ## Evaluation view
 
-![Competency Gap Intelligence evaluation checklist](assets/evaluation_dashboard.svg)
 
 The evaluation graphic is a checklist, not a measured result.
 
